@@ -56,7 +56,6 @@
     lineinfile: dest={{item}} regexp="^(#.*)?$" state=absent
     with_items:
       - /etc/tor/torrc
-    notify: Restart ssh
 
   - name: Create service state directory
     file: path=/srv owner=root group=daemon mode=0755
