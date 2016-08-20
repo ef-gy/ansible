@@ -1,0 +1,80 @@
+---
+- hosts: sazerac.lan # hosts: debian
+  remote_user: root
+  tasks:
+  - name: Update APT
+    apt: update_cache=yes cache_valid_time=3600
+
+  - name: Install and update common utilities
+    apt: pkg={{item}} state=latest
+    with_items:
+      - git
+      - scanlogd
+      - tor
+      - socat
+      - htop
+      - ippl
+      - curl
+      - tmux
+      - openssh-server
+      - golang
+
+  - name: Purge unused default utilities
+    apt: pkg={{item}} state=absent purge=yes
+    environment:
+      SUDO_FORCE_REMOVE: 'yes'
+    with_items:
+      - apache2
+      - sendmail
+      - postfix
+      - exim
+      - exim4
+      - sudo
+
+# Source:
+# http://serverfault.com/questions/644082/running-apt-get-autoremove-with-ansible 
+  - name: Check if packages need to be autoremoved
+    command: apt-get --dry-run autoremove
+    register: check_autoremove
+    changed_when: False
+
+# Source:
+# http://serverfault.com/questions/644082/running-apt-get-autoremove-with-ansible 
+  - name: Autoremove unused packages
+    command: apt-get -y autoremove --purge
+    when: "'packages will be REMOVED' in check_autoremove.stdout"
+
+  - name: Install tightened SSH configuration
+    copy: src={{item}} dest=/etc/ssh/{{item}} owner=root group=root mode=0755
+    with_items:
+      - ssh_config
+      - sshd_config
+    notify: Restart ssh
+
+  - name: Remove comments and blank lines in config files
+    lineinfile: dest={{item}} regexp="^(#.*)?$" state=absent
+    with_items:
+      - /etc/tor/torrc
+    notify: Restart ssh
+
+  - name: Create service state directory
+    file: path=/srv owner=root group=daemon mode=0755
+
+  - name: Create Tor Hidden Service directory
+    file: path=/srv/tor state=directory owner=debian-tor mode=0700
+    notify: Restart tor
+
+  - name: Enable critical services
+    service: name={{item}} enabled=yes state=started
+    with_items:
+      - tor
+      - ssh
+
+# Source:
+# http://ryaneschinger.com/blog/securing-a-server-with-ansible/
+  handlers:
+  - name: Restart ssh
+    service: name=ssh state=restarted
+
+  - name: Restart tor
+    service: name=tor state=restarted

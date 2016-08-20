@@ -1,0 +1,23 @@
+# defaults for all hosts
+Host *
+    SendEnv LANG LC_*
+    HashKnownHosts yes
+    VisualHostKey yes
+
+# allow access to Tor Hidden Services
+Host *.onion
+  ProxyCommand socat STDIO SOCKS4A:127.0.0.1:%h:%p,socksport=9050
+
+# give nicer names to some known Hidden Services
+Host salty-dog.onion
+  HostName g64fhc4rnesygmdv.onion
+Host sazerac.onion
+  HostName drcc6mesv4kzmgez.onion
+Host four-score.onion
+  HostName jjozwa4l37pxnoyp.onion
+Host jack-rose.onion
+  HostName zqxhqy7xibtenpsp.onion
+Host caribou-lou.onion
+  HostName umtxevpt2ya7txlt.onion
+Host fluffy-critter.onion
+  HostName fgm2yrzalpz3rdro.onion

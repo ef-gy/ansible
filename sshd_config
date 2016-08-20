@@ -1,0 +1,20 @@
+# Redundant, but being explicit about this as it influences a few other
+# settings.
+Protocol 2
+
+# This is the default on some systems, but not all.
+UsePrivilegeSeparation sandbox
+
+# We've disabled sudo capabilities, so this needs to be enabled.
+PermitRootLogin without-password
+
+# Explicitly disable non-pubkey authentication methods.
+ChallengeResponseAuthentication no
+PasswordAuthentication no
+
+AcceptEnv LANG LC_*
+Subsystem sftp /usr/lib/openssh/sftp-server
+
+# Enabled for account-management purposes only. Authentication with PAM is
+# disabled from earlier.
+UsePAM yes
