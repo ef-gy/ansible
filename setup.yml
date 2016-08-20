@@ -1,5 +1,5 @@
 ---
-- hosts: sazerac.lan # hosts: debian
+- hosts: debian
   remote_user: root
   tasks:
   - name: Update APT
