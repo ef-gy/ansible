@@ -25,12 +25,15 @@
     environment:
       SUDO_FORCE_REMOVE: 'yes'
     with_items:
-      - apache2
-      - sendmail
+      - apache2*
+      - sendmail*
       - postfix
       - exim
       - exim4
       - sudo
+      - iptables
+      - portmap
+      - bind9
 
 # Source:
 # http://serverfault.com/questions/644082/running-apt-get-autoremove-with-ansible 
